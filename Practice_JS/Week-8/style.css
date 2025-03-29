@@ -117,8 +117,7 @@ footer {
   nav {
     grid-column: 1 / -1;
     grid-row: 2;
-    position: static; /* Отключаем sticky */
-    top: unset;
+    top: 0;
   }
 
   main {
