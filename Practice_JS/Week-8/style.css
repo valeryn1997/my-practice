@@ -4,73 +4,140 @@
   padding: 0;
 }
 
-.grid-container {
-  display: grid;
-  grid-template-columns: 250px 1fr; /* Сайдбар 250px, основной контент — остаток */
-  grid-template-rows: auto 1fr auto; /* Заголовок, контент, подвал */
-  gap: 20px;
-  padding: 20px;
-  min-height: 100vh;
+html {
+  scroll-behavior: smooth; /* Плавная прокрутка */
 }
 
+/* Основной контейнер сетки */
+.grid-container {
+  display: grid;
+  grid-template-columns: 250px 1fr; /* Сайдбар | Контент */
+  grid-template-rows: auto auto 1fr auto; /* Шапка, Нав, Контент+Сайдбар, Футер */
+  gap: 20px;
+  min-height: 100vh;
+  padding: 20px;
+}
+
+/* Шапка */
 header {
-  grid-column: 1 / -1; /* Занимает все колонки */
+  grid-column: 1 / -1;
   background-color: #4caf50;
   color: white;
   padding: 20px;
   text-align: center;
 }
 
+/* Навигационное меню */
 nav {
-  grid-column: 1 / 2; /* Только первая колонка */
+  grid-column: 1 / 2;
+  grid-row: 2 / 4; /* Занимает от 2 до 4 строки */
   background-color: #333;
   color: white;
   padding: 20px;
+  position: sticky;
+  top: 20px; /* Учет gap контейнера */
+  align-self: start; /* Критично для sticky */
+  height: fit-content;
+  z-index: 10;
 }
 
 nav ul {
   list-style: none;
   display: flex;
-  gap: 15px;
   flex-direction: column;
+  gap: 15px;
 }
 
 nav a {
   color: white;
   text-decoration: none;
+  transition: color 0.3s;
 }
 
+nav a:hover {
+  color: #4caf50;
+}
+
+/* Основной контент */
 main {
-  grid-column: 2 / 3; /* Вторая колонка */
+  grid-column: 2 / 3;
+  grid-row: 2 / 4; /* Занимает 2-4 строки */
   background-color: #f0f0f0;
   padding: 20px;
   border-radius: 8px;
 }
 
+/* Сайдбар */
 aside {
-  grid-column: 2 / 3; /* Вторая колонка */
+  grid-column: 2 / 3;
+  grid-row: 4; /* Располагается под основным контентом */
   background-color: #ddd;
   padding: 20px;
   border-radius: 8px;
 }
 
+/* Подвал */
 footer {
-  grid-column: 1 / -1; /* Занимает все колонки */
+  grid-column: 1 / -1;
   background-color: #333;
   color: white;
   padding: 20px;
   text-align: center;
 }
 
-/* Адаптивность */
+/* Секция статей */
+.articles {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  margin-top: 20px;
+}
+
+.article-card {
+  flex: 1 1 calc(33.33% - 15px);
+  background-color: white;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+/* Якорные ссылки - отступ для sticky-шапки */
+#articles,
+#contacts {
+  scroll-margin-top: 100px;
+}
+
+/* Мобильная адаптация */
 @media (max-width: 768px) {
   .grid-container {
-    grid-template-columns: 1fr; /* 1 колонка на мобильных */
+    grid-template-columns: 1fr;
+    grid-template-rows: auto auto 1fr auto auto; /* Шапка, Нав, Контент, Сайдбар, Футер */
   }
 
-  nav,
-  main,
+  nav {
+    grid-column: 1 / -1;
+    grid-row: 2;
+    position: static; /* Отключаем sticky */
+    top: unset;
+  }
+
+  main {
+    grid-column: 1 / -1;
+    grid-row: 3;
+  }
+
   aside {
-    grid-column: 1 / -1; /* Все элементы в одну колонку */
+    grid-column: 1 / -1;
+    grid-row: 4;
+  }
+
+  .article-card {
+    flex: 1 1 100%;
+  }
+
+  /* Корректируем отступы для мобилок */
+  #articles,
+  #contacts {
+    scroll-margin-top: 140px;
   }
 }
