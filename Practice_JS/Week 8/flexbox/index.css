@@ -1,0 +1,46 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+.gallery {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+  padding: 20px;
+  width: 100%;
+}
+
+.image-card {
+  flex: 1 1 calc(33.33% - 15px); /* 3 колонки на десктопе */
+  background-color: #f0f0f0;
+  padding: 20px;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.image-card img {
+  max-width: 100%; /* Изображения не должны выходить за границы карточки */
+  height: auto;
+  border-radius: 8px;
+}
+
+/* Медиа-запрос для планшетов (2 колонки) */
+@media (max-width: 1024px) {
+  .image-card {
+    flex: 1 1 calc(50% - 15px); /* 2 колонки */
+  }
+}
+
+/* Медиа-запрос для мобильных (1 колонка) */
+@media (max-width: 768px) {
+  .image-card {
+    flex: 1 1 calc(100% - 15px); /* 1 колонка */
+    min-width: 0; /* Сбросить min-width */
+  }
+
+  .image-card img {
+    height: 300px; /* Фиксированная высота для мобильных */
+  }
+}

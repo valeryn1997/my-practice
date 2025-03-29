@@ -1,0 +1,61 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+.grid-container {
+  display: grid;
+  grid-template-columns: 200px 1fr; /* Сайдбар (200px) и основной контент (1fr) */
+  grid-template-rows: auto 1fr auto; /* Заголовок, контент, подвал */
+  gap: 20px;
+  padding: 20px;
+  min-height: 100vh;
+}
+
+header {
+  grid-column: 1 / -1; /* Занимает все колонки */
+  background-color: #4caf50;
+  padding: 20px;
+  color: white;
+}
+
+nav {
+  grid-column: 1 / 2; /* Только первая колонка */
+  background-color: #333;
+  color: white;
+  padding: 20px;
+}
+
+main {
+  grid-column: 2 / 3; /* Вторая колонка */
+  background-color: #f0f0f0;
+  padding: 20px;
+}
+
+aside {
+  grid-column: 2 / 3; /* Вторая колонка */
+  background-color: #ddd;
+  padding: 20px;
+}
+
+footer {
+  grid-column: 1 / -1; /* Занимает все колонки */
+  background-color: #333;
+  color: white;
+  padding: 20px;
+  text-align: center;
+}
+
+/* Адаптивность */
+@media (max-width: 768px) {
+  .grid-container {
+    grid-template-columns: 1fr; /* 1 колонка на мобильных */
+  }
+
+  nav,
+  main,
+  aside {
+    grid-column: 1 / -1; /* Все элементы в одну колонку */
+  }
+}
