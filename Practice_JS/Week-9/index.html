@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Адаптивная галерея с бургер-меню</title>
+    <link rel="stylesheet" href="index.css" />
+  </head>
+  <body>
+    <nav id="header">
+      <div class="burger-menu">☰</div>
+      <ul class="nav-links">
+        <li><a href="#top">Главная</a></li>
+        <li><a href="#gallery">Галерея</a></li>
+        <li><a href="#contacts">Контакты</a></li>
+      </ul>
+    </nav>
+    <div id="gallery" class="grid-gallery">
+      <div class="gallery-item">
+        <img src="image1.jpg" alt="Изображение 1" />
+      </div>
+      <div class="gallery-item">
+        <img src="image2.jpg" alt="Изображение 2" />
+      </div>
+      <div class="gallery-item">
+        <img src="image3.jpg" alt="Изображение 3" />
+      </div>
+      <div class="gallery-item">
+        <img src="image4.jpg" alt="Изображение 4" />
+      </div>
+      <div class="gallery-item">
+        <img src="image5.jpg" alt="Изображение 5" />
+      </div>
+      <div class="gallery-item">
+        <img src="image6.jpg" alt="Изображение 6" />
+      </div>
+    </div>
+    <footer id="contacts">Подвал сайта</footer>
+    <script src="index.js" defer></script>
+    <div class="modal">
+      <span class="close">&times;</span>
+      <img class="modal-content" id="modalImg" />
+    </div>
+  </body>
+</html>
