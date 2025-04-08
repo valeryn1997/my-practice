@@ -36,3 +36,4 @@ modal.addEventListener("click", (e) => {
     modal.classList.remove("show");
   }
 });
+document.querySelector(".grid-gallery").classList.add("loaded");
