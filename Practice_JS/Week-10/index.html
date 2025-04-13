@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Сравнение субъектов</title>
+    <link rel="stylesheet" href="styles.css" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  </head>
+  <body>
+    <div class="container">
+      <h1>Сравнение субъектов</h1>
+
+      <!-- Настройки -->
+      <div class="settings">
+        <input
+          type="number"
+          id="subjectCount"
+          placeholder="Количество субъектов"
+          min="1"
+        />
+        <input
+          type="number"
+          id="criteriaCount"
+          placeholder="Количество критериев"
+          min="1"
+        />
+        <button id="start">Начать настройку</button>
+      </div>
+
+      <!-- Форма для ввода названий -->
+      <div id="setupForm" class="hidden">
+        <div id="subjectNames" class="names-section"></div>
+        <div id="criteriaNames" class="names-section"></div>
+        <button id="generateGrid">Создать таблицу оценивания</button>
+      </div>
+
+      <!-- Таблица оценивания -->
+      <div id="evaluationGrid" class="hidden grid-container"></div>
+
+      <!-- Кнопка подсчёта -->
+      <button id="calculate" class="hidden">Подсчитать баллы</button>
+
+      <!-- Результаты -->
+      <div class="results hidden">
+        <h2>Итоги:</h2>
+        <div id="scores"></div>
+        <canvas id="chart"></canvas>
+      </div>
+    </div>
+    <script src="script.js"></script>
+  </body>
+</html>
