@@ -49,6 +49,6 @@ app.get("/api/results", (req, res) => {
   res.json(JSON.parse(data));
 });
 
-app.listen(port, () => {
-  console.log(`Сервер запущен на http://localhost:${port}`);
+app.listen(port, "0.0.0.0", () => {
+  console.log(`Сервер доступен по адресу: http://ваш-ip:${port}`);
 });
