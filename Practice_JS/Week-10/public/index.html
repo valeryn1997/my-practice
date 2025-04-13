@@ -38,16 +38,23 @@
       <!-- Таблица оценивания -->
       <div id="evaluationGrid" class="hidden grid-container"></div>
 
-      <!-- Кнопка подсчёта -->
-      <button id="calculate" class="hidden">Подсчитать баллы</button>
+      <!-- Кнопки управления -->
+      <div class="controls">
+        <button id="calculate" class="hidden">Подсчитать баллы</button>
+        <button id="showHistory" class="hidden">Показать историю</button>
+      </div>
 
       <!-- Результаты -->
-      <div class="results hidden">
+      <div id="results" class="hidden">
         <h2>Итоги:</h2>
         <div id="scores"></div>
-        <!-- Прогресс-бары -->
         <canvas id="chart"></canvas>
-        <!-- График -->
+      </div>
+
+      <!-- История сравнений -->
+      <div id="history" class="hidden">
+        <h2>История:</h2>
+        <ul id="historyList"></ul>
       </div>
     </div>
     <script src="script.js"></script>

@@ -100,56 +100,57 @@ document.getElementById("generateGrid").addEventListener("click", () => {
     evaluationGrid.appendChild(column);
   });
 
-  // Показываем таблицу и кнопку подсчёта
+  // Показываем таблицу и кнопки
   evaluationGrid.classList.remove("hidden");
   document.getElementById("calculate").classList.remove("hidden");
+  document.getElementById("showHistory").classList.remove("hidden");
 });
 
-document.getElementById("calculate").addEventListener("click", () => {
+document.getElementById("calculate").addEventListener("click", async () => {
   const subjects = Array.from(document.querySelectorAll(".subject-name")).map(
     (el) => el.textContent
   );
   const scores = {};
 
-  // Подсчёт баллов
   document.querySelectorAll(".slider").forEach((slider) => {
     const subjectIndex = slider.dataset.subject;
     scores[subjectIndex] = (scores[subjectIndex] || 0) + parseInt(slider.value);
   });
 
-  // Максимальный балл для нормализации ширины прогресс-баров
-  const maxScore = Math.max(...Object.values(scores));
+  // Сохраняем данные на сервере
+  try {
+    await fetch("http://localhost:3000/api/save", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ subjects, scores }),
+    });
+  } catch (error) {
+    console.error("Ошибка сохранения:", error);
+  }
 
-  // Очистка старых результатов
+  // Вывод результатов
   const scoresDiv = document.getElementById("scores");
-  scoresDiv.innerHTML = "";
-
-  // Создание прогресс-баров
-  Object.entries(scores).forEach(([subjectIndex, score]) => {
-    const progressContainer = document.createElement("div");
-    progressContainer.className = "progress-container";
-
-    const progressBar = document.createElement("div");
-    progressBar.className = "progress-bar";
-
-    const label = document.createElement("span");
-    label.textContent = `${subjects[subjectIndex]}: ${score} баллов`;
-
-    const bar = document.createElement("div");
-    bar.className = "bar";
-
-    const barFill = document.createElement("div");
-    barFill.className = "bar-fill";
-    barFill.style.width = `${(score / maxScore) * 100}%`;
-    barFill.dataset.subject = subjectIndex;
-
-    bar.appendChild(barFill);
-    progressBar.appendChild(label);
-    progressBar.appendChild(bar);
-    progressContainer.appendChild(progressBar);
-
-    scoresDiv.appendChild(progressContainer);
-  });
+  scoresDiv.innerHTML = Object.entries(scores)
+    .map(([subjectIndex, score]) => {
+      const maxScore = Object.values(scores).reduce(
+        (a, b) => Math.max(a, b),
+        0
+      );
+      return `
+        <div class="progress-container">
+          <div class="progress-bar">
+            <span>${subjects[subjectIndex]}:</span>
+            <div class="bar">
+              <div class="bar-fill" data-subject="${subjectIndex}" style="width: ${
+        (score / maxScore) * 100
+      }%"></div>
+            </div>
+            <span>${score} баллов</span>
+          </div>
+        </div>
+      `;
+    })
+    .join("");
 
   // График
   new Chart(document.getElementById("chart"), {
@@ -170,11 +171,38 @@ document.getElementById("calculate").addEventListener("click", () => {
         y: { beginAtZero: true },
       },
       plugins: {
-        legend: { display: false }, // Убираем легенду
+        legend: { display: false },
       },
     },
   });
 
   // Показываем результаты
-  document.querySelector(".results").classList.remove("hidden");
+  document.getElementById("results").classList.remove("hidden");
+});
+
+// Кнопка "Показать историю"
+document.getElementById("showHistory").addEventListener("click", async () => {
+  try {
+    const response = await fetch("/api/results");
+    const data = await response.json();
+
+    const historyList = document.getElementById("historyList");
+    historyList.innerHTML = data
+      .map(
+        (item) => `
+      <li>
+        <strong>${new Date(item.timestamp).toLocaleDateString()}</strong>
+        <div>${item.subjects
+          .map((subject, i) => `${subject}: ${item.scores[i] || 0} баллов`)
+          .join(" | ")}</div>
+      </li>
+    `
+      )
+      .join("");
+
+    // Показываем историю
+    document.getElementById("history").classList.remove("hidden");
+  } catch (error) {
+    console.error("Ошибка загрузки истории:", error);
+  }
 });
