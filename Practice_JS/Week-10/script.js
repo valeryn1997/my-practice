@@ -111,19 +111,45 @@ document.getElementById("calculate").addEventListener("click", () => {
   );
   const scores = {};
 
+  // Подсчёт баллов
   document.querySelectorAll(".slider").forEach((slider) => {
     const subjectIndex = slider.dataset.subject;
     scores[subjectIndex] = (scores[subjectIndex] || 0) + parseInt(slider.value);
   });
 
-  // Вывод результатов
+  // Максимальный балл для нормализации ширины прогресс-баров
+  const maxScore = Math.max(...Object.values(scores));
+
+  // Очистка старых результатов
   const scoresDiv = document.getElementById("scores");
-  scoresDiv.innerHTML = Object.entries(scores)
-    .map(
-      ([subjectIndex, score]) =>
-        `<p>${subjects[subjectIndex]}: ${score} баллов</p>`
-    )
-    .join("");
+  scoresDiv.innerHTML = "";
+
+  // Создание прогресс-баров
+  Object.entries(scores).forEach(([subjectIndex, score]) => {
+    const progressContainer = document.createElement("div");
+    progressContainer.className = "progress-container";
+
+    const progressBar = document.createElement("div");
+    progressBar.className = "progress-bar";
+
+    const label = document.createElement("span");
+    label.textContent = `${subjects[subjectIndex]}: ${score} баллов`;
+
+    const bar = document.createElement("div");
+    bar.className = "bar";
+
+    const barFill = document.createElement("div");
+    barFill.className = "bar-fill";
+    barFill.style.width = `${(score / maxScore) * 100}%`;
+    barFill.dataset.subject = subjectIndex;
+
+    bar.appendChild(barFill);
+    progressBar.appendChild(label);
+    progressBar.appendChild(bar);
+    progressContainer.appendChild(progressBar);
+
+    scoresDiv.appendChild(progressContainer);
+  });
 
   // График
   new Chart(document.getElementById("chart"), {
@@ -142,6 +168,9 @@ document.getElementById("calculate").addEventListener("click", () => {
     options: {
       scales: {
         y: { beginAtZero: true },
+      },
+      plugins: {
+        legend: { display: false }, // Убираем легенду
       },
     },
   });

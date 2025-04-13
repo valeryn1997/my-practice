@@ -130,3 +130,52 @@ button:hover {
     grid-template-columns: 1fr;
   }
 }
+/* Прогресс-бары */
+.progress-container {
+  margin-bottom: 15px;
+}
+
+.progress-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.progress-bar span {
+  font-weight: bold;
+  width: 100px;
+}
+
+.bar {
+  flex: 1;
+  height: 20px;
+  border-radius: 10px;
+  background-color: #e0e0e0;
+  overflow: hidden;
+}
+
+.bar-fill {
+  height: 100%;
+  border-radius: 10px;
+  transition: width 0.3s ease;
+}
+
+/* Цвета для разных субъектов */
+.bar-fill[data-subject="0"] {
+  background-color: #4caf50;
+}
+.bar-fill[data-subject="1"] {
+  background-color: #2196f3;
+}
+.bar-fill[data-subject="2"] {
+  background-color: #ff5722;
+}
+.bar-fill[data-subject="3"] {
+  background-color: #9c27b0;
+}
+
+/* График */
+#chart {
+  max-width: 600px;
+  margin: 20px auto;
+}
