@@ -9,7 +9,7 @@
   </head>
   <body>
     <div class="container">
-      <h1>Давай сравним!</h1>
+      <h1>Сравнение субъектов</h1>
 
       <!-- Настройки -->
       <div class="settings">
@@ -49,12 +49,17 @@
         <h2>Итоги:</h2>
         <div id="scores"></div>
         <canvas id="chart"></canvas>
+        <!-- График для текущих результатов -->
       </div>
 
       <!-- История сравнений -->
-      <div id="history" class="hidden">
-        <h2>История:</h2>
-        <ul id="historyList"></ul>
+      
+    <div id="history" class="hidden">
+      <h2>История:</h2>
+      <ul id="historyList"></ul>
+      <!-- Добавлен контейнер для графика -->
+      <div class="chart-container">
+        <canvas id="historyChart"></canvas>
       </div>
     </div>
     <script src="script.js"></script>

@@ -1,3 +1,7 @@
+const App = {
+  chart: null,
+  historyChart: null,
+};
 document.getElementById("start").addEventListener("click", () => {
   const subjectCount =
     parseInt(document.getElementById("subjectCount").value) || 1;
@@ -48,8 +52,8 @@ document.getElementById("generateGrid").addEventListener("click", () => {
 
   const evaluationGrid = document.getElementById("evaluationGrid");
   evaluationGrid.innerHTML = "";
-  evaluationGrid.style.gridTemplateColumns = `repeat(${subjects.length}, 1fr)`;
 
+  // Генерация колонок для каждого субъекта
   subjects.forEach((subject, subjectIndex) => {
     const column = document.createElement("div");
     column.className = "subject-column";
@@ -63,18 +67,15 @@ document.getElementById("generateGrid").addEventListener("click", () => {
       const sliderDiv = document.createElement("div");
       sliderDiv.className = "criteria-slider";
 
-      const label = document.createElement("label");
-      label.textContent = criterion;
-
       const emoji = document.createElement("span");
       emoji.className = "emoji";
       emoji.textContent = "😞";
 
       const slider = document.createElement("input");
       slider.type = "range";
-      slider.min = "0";
-      slider.max = "5";
-      slider.value = "0";
+      slider.min = 0;
+      slider.max = 5;
+      slider.value = 0;
       slider.className = "slider";
       slider.dataset.subject = subjectIndex;
       slider.dataset.criterion = criterionIndex;
@@ -91,7 +92,8 @@ document.getElementById("generateGrid").addEventListener("click", () => {
       });
 
       sliderDiv.appendChild(emoji);
-      sliderDiv.appendChild(label);
+      sliderDiv.appendChild(document.createElement("label")).textContent =
+        criterion;
       sliderDiv.appendChild(slider);
       sliderDiv.appendChild(valueDisplay);
       column.appendChild(sliderDiv);
@@ -117,6 +119,12 @@ document.getElementById("calculate").addEventListener("click", async () => {
     scores[subjectIndex] = (scores[subjectIndex] || 0) + parseInt(slider.value);
   });
 
+  // Уничтожаем старый график
+  if (window.chart instanceof Chart) {
+    window.chart.destroy();
+    window.chart = null;
+  }
+
   // Сохраняем данные на сервере
   try {
     await fetch("http://localhost:3000/api/save", {
@@ -128,22 +136,23 @@ document.getElementById("calculate").addEventListener("click", async () => {
     console.error("Ошибка сохранения:", error);
   }
 
+  // Генерация случайных цветов
+  const colors = subjects.map(() => `hsl(${Math.random() * 360}, 70%, 50%)`);
+
   // Вывод результатов
   const scoresDiv = document.getElementById("scores");
   scoresDiv.innerHTML = Object.entries(scores)
     .map(([subjectIndex, score]) => {
-      const maxScore = Object.values(scores).reduce(
-        (a, b) => Math.max(a, b),
-        0
-      );
+      const maxScore = Math.max(...Object.values(scores));
       return `
         <div class="progress-container">
           <div class="progress-bar">
             <span>${subjects[subjectIndex]}:</span>
             <div class="bar">
-              <div class="bar-fill" data-subject="${subjectIndex}" style="width: ${
-        (score / maxScore) * 100
-      }%"></div>
+              <div class="bar-fill" style="
+                width: ${(score / maxScore) * 100}%;
+                background-color: ${colors[subjectIndex]};
+              "></div>
             </div>
             <span>${score} баллов</span>
           </div>
@@ -152,8 +161,21 @@ document.getElementById("calculate").addEventListener("click", async () => {
     })
     .join("");
 
-  // График
-  new Chart(document.getElementById("chart"), {
+  // Показываем результаты
+  const resultsEl = document.getElementById("results");
+  resultsEl.classList.remove("hidden");
+
+  // Ждём обновления DOM
+  await new Promise((resolve) => requestAnimationFrame(resolve));
+
+  // Уничтожаем старый график
+  if (window.chart instanceof Chart) {
+    window.chart.destroy();
+  }
+
+  // Создаём новый график
+  const chartElement = document.getElementById("chart");
+  window.chart = new Chart(chartElement, {
     type: "bar",
     data: {
       labels: subjects,
@@ -161,48 +183,91 @@ document.getElementById("calculate").addEventListener("click", async () => {
         {
           label: "Баллы",
           data: Object.values(scores),
-          backgroundColor: ["#4CAF50", "#2196F3", "#ff5722", "#9c27b0"],
+          backgroundColor: colors,
           borderWidth: 1,
         },
       ],
     },
     options: {
-      scales: {
-        y: { beginAtZero: true },
-      },
-      plugins: {
-        legend: { display: false },
-      },
+      responsive: true, // Важно для адаптивности
+      scales: { y: { beginAtZero: true } },
+      plugins: { legend: { display: false } },
     },
   });
-
-  // Показываем результаты
-  document.getElementById("results").classList.remove("hidden");
 });
 
-// Кнопка "Показать историю"
 document.getElementById("showHistory").addEventListener("click", async () => {
   try {
-    const response = await fetch("/api/results");
+    const response = await fetch("http://localhost:3000/api/results");
     const data = await response.json();
 
+    // Уничтожаем предыдущий график истории
+    if (window.historyChart instanceof Chart) {
+      window.historyChart.destroy();
+      window.historyChart = null;
+    }
+
+    // Генерируем HTML для истории
     const historyList = document.getElementById("historyList");
     historyList.innerHTML = data
-      .map(
-        (item) => `
-      <li>
-        <strong>${new Date(item.timestamp).toLocaleDateString()}</strong>
-        <div>${item.subjects
-          .map((subject, i) => `${subject}: ${item.scores[i] || 0} баллов`)
-          .join(" | ")}</div>
-      </li>
-    `
-      )
+      .map((item) => {
+        const date = new Date(item.timestamp);
+        const formattedDate = date.toLocaleString("ru-RU", {
+          day: "2-digit",
+          month: "2-digit",
+          year: "numeric",
+          hour: "2-digit",
+          minute: "2-digit",
+          second: "2-digit",
+        });
+
+        return `
+          <li>
+            <strong>${formattedDate}</strong>
+            <div>${item.subjects
+              .map((s, i) => `${s}: ${item.scores[i] || 0}`)
+              .join(" | ")}</div>
+          </li>
+        `;
+      })
       .join("");
 
-    // Показываем историю
+    // Создаём новый график только если данные есть
+    if (data.length > 0 && data[0].subjects) {
+      const ctx = document.getElementById("historyChart");
+      if (!ctx) return;
+
+      // Генерация цветов
+      const colors = generateColors(data[0].subjects.length);
+
+      window.historyChart = new Chart(ctx, {
+        type: "bar",
+        data: {
+          labels: data[0].subjects,
+          datasets: data.map((item, index) => ({
+            label: `Сравнение #${index + 1}`,
+            data: Object.values(item.scores),
+            backgroundColor: colors,
+            borderWidth: 1,
+          })),
+        },
+        options: {
+          responsive: true, // Добавлено для адаптивности
+          scales: { y: { beginAtZero: true } },
+        },
+      });
+    }
+
     document.getElementById("history").classList.remove("hidden");
   } catch (error) {
     console.error("Ошибка загрузки истории:", error);
   }
 });
+
+// Генерация случайных цветов
+function generateColors(count) {
+  return Array.from(
+    { length: count },
+    () => `hsl(${Math.random() * 360}, 70%, 50%)`
+  );
+}
